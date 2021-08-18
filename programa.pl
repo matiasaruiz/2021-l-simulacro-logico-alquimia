@@ -50,8 +50,29 @@ requiereElemento(Receta, Material) :-
         tieneIngredientesPara(ana, vapor).
     test(que_puede_hacer, set(Que=[pasto,silicio])):-
         tieneIngredientesPara(ana, Que).
-    
 :- end_tests(tieneIngredientesPara).
+
+% 3. Saber si un elemento estaVivo. Se sabe que el agua, el fuego 
+% y todo lo que fue construido a partir de alguno de ellos, están vivos. 
+% Debe funcionar para cualquier nivel.
+% Por ejemplo, la play station y los huesos están vivos, pero el silicio no.
+
+estaVivo(agua).
+estaVivo(fuego).
+estaVivo(Elemento):-
+    requiereElemento(Elemento, Ingrediente),
+    estaVivo(Ingrediente).
+
+:- begin_tests(estaVivo).
+    tests(esta_vivo):-
+        estaVivo(huesos).
+    tests(esta_vivo_recursivo):-
+        estaVivo(playStation).
+    tests(no_esta_vivo, fail):-
+        estaVivo(silicio).
+    test(quien_esta_vivio, set(Quien=[agua,fuego,hierro,huesos,pasto,plastico,playStation,presion,vapor])):-
+        estaVivo(Quien).
+:- end_tests(estaVivo).
 
 
 
