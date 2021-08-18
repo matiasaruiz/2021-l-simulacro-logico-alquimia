@@ -7,11 +7,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % 1. Modelar los jugadores y elementos y agregarlos a la base de conocimiento, utilizando los ejemplos provistos.
+jugador(ana).
+jugador(beto).
+jugador(cata).
 
 % tiene(Jugador, Elemento)
-tiene(ana, [agua, agua, tierra, hierro]).
-tiene(beto, [agua, agua, tierra, hierro]).
-tiene(cata, [fuego, tierra, agua, aire]).
+elementosDe(ana, [agua, agua, tierra, hierro]).
+elementosDe(beto, [agua, agua, tierra, hierro]).
+elementosDe(cata, [fuego, tierra, agua, aire]).
+
+tiene(Persona, Elemento) :-
+    elementosDe(Persona, ElementosQueTiene),
+    member(Elemento, ElementosQueTiene).
 
 % receta(Elemento, [Ingredientes])
 receta(pasto, [agua, tierra]).
@@ -21,7 +28,32 @@ receta(vapor, [agua, fuego]).
 receta(presion, [hierro, vapor]).
 receta(silicio, [tierra]).
 receta(plastico, [hierro, vapor]).
-receta(playStation, [silicio, hierro, plastico])
+receta(playStation, [silicio, hierro, plastico]).
+
+% 2. Saber si un jugador tieneIngredientesPara construir un elemento, 
+%  que es cuando tiene ahora en su inventario todo lo que hace falta.
+%  Por ejemplo, ana tiene los ingredientes para el pasto, pero no para el vapor. 
+
+tieneIngredientesPara(Jugador, Receta):-
+    jugador(Jugador),
+    receta(Receta, _),
+    forall(requiereElemento(Receta, Material), tiene(Jugador, Material)).
+
+requiereElemento(Receta, Material) :-
+    receta(Receta, Materiales),
+    member(Material, Materiales).
+  
+:- begin_tests(tieneIngredientesPara).
+    test(tiene_ingredientes_para_la_receta):-
+        tieneIngredientesPara(ana, pasto).
+    test(no_tiene_ingredientes_para_la_receta, fail):-
+        tieneIngredientesPara(ana, vapor).
+    test(que_puede_hacer, set(Que=[pasto,silicio])):-
+        tieneIngredientesPara(ana, Que).
+    
+:- end_tests(tieneIngredientesPara).
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
